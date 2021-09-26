@@ -50,16 +50,6 @@ func NewManager() *Manager {
 	return rm
 }
 
-func (rm *Manager) hasSameMethod(methods []string, method string) bool {
-	for _, mtd := range methods {
-		if mtd == method {
-			return true
-		}
-	}
-
-	return false
-}
-
 //if filterPrefix value is '@' that mean not to filter, but it is has hidden danger, so you kown what to do.
 func (rm *Manager) SetFilterPrefix(filterPrefix string) *Manager {
 	if filterPrefix == "@" {
@@ -112,7 +102,7 @@ func (rm *Manager) GetHTTPMethodNamePrefix() string {
 }
 
 func (rm *Manager) SetBeforeMethodName(methodName string) *Manager {
-	if !rm.hasSameMethod(rm.beforeMethodName, methodName) {
+	if !hasSameMethod(rm.beforeMethodName, methodName) {
 		rm.beforeMethodName = append(rm.beforeMethodName, methodName)
 	}
 
@@ -130,7 +120,7 @@ func (rm *Manager) GetBeforeMethodName() []string {
 }
 
 func (rm *Manager) SetAfterMethodName(methodName string) *Manager {
-	if !rm.hasSameMethod(rm.afterMethodName, methodName) {
+	if !hasSameMethod(rm.afterMethodName, methodName) {
 		rm.afterMethodName = append(rm.afterMethodName, methodName)
 	}
 
