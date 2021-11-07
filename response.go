@@ -4,22 +4,22 @@ import (
 	"net/http"
 )
 
-type responseWriter struct {
+type ResponseWriter struct {
 	http.ResponseWriter
-	writedHeader bool
+	wroteHeader bool
 }
 
-func (rw *responseWriter) Header() http.Header {
+func (rw *ResponseWriter) Header() http.Header {
 	return rw.ResponseWriter.Header()
 }
 
-func (rw *responseWriter) WriteHeader(statusCode int) {
-	if !rw.writedHeader {
-		rw.writedHeader = true
+func (rw *ResponseWriter) WriteHeader(statusCode int) {
+	if !rw.wroteHeader {
+		rw.wroteHeader = true
 		rw.ResponseWriter.WriteHeader(statusCode)
 	}
 }
 
-func (rw *responseWriter) Write(b []byte) (int, error) {
+func (rw *ResponseWriter) Write(b []byte) (int, error) {
 	return rw.ResponseWriter.Write(b)
 }

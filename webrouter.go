@@ -73,10 +73,6 @@ func GetFilterMethodNameAndHTTPMethodName(methodName string) (string, string) {
 	return DefaultRouter.GetFilterMethodNameAndHTTPMethodName(methodName)
 }
 
-func ResponseWriter(responseWriter http.ResponseWriter) {
-	DefaultRouter.ResponseWriter(responseWriter)
-}
-
 func SetCloser(fn func()) {
 	DefaultRouter.SetCloser(fn)
 }

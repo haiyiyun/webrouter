@@ -24,7 +24,6 @@ type Manager struct {
 	beforeMethodName     []string
 	afterMethodName      []string
 	registers            map[string]register
-	responseWriter       http.ResponseWriter
 	closer               []func()
 }
 
@@ -135,10 +134,6 @@ func (rm *Manager) ClearAfterMethodName() *Manager {
 
 func (rm *Manager) GetAfterMethodName() []string {
 	return rm.afterMethodName
-}
-
-func (rm *Manager) ResponseWriter(writer http.ResponseWriter) {
-	rm.responseWriter = writer
 }
 
 func (rm *Manager) SetCloser(fn func()) {
@@ -434,27 +429,29 @@ func (rm *Manager) Handler(r *http.Request) (h http.Handler, pattern string) {
 
 //processing order: injector > handler > releasor
 func (rm *Manager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	rw := &ResponseWriter{
+		ResponseWriter: w,
+	}
+
 	if r.RequestURI == "*" {
-		w.Header().Set("Connection", "close")
+		if r.ProtoAtLeast(1, 1) {
+			w.Header().Set("Connection", "close")
+		}
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	rm.responseWriter = &responseWriter{
-		ResponseWriter: w,
-	}
-
 	for _, injection := range rm.injections {
-		if abort := injection.h(rm.responseWriter, r); abort {
+		if abort := injection.h(rw, r); abort {
 			return
 		}
 	}
 
 	h, _ := rm.Handler(r)
-	h.ServeHTTP(rm.responseWriter, r)
+	h.ServeHTTP(rw, r)
 
 	for _, release := range rm.releases {
-		if abort := release.h(rm.responseWriter, r); abort {
+		if abort := release.h(rw, r); abort {
 			return
 		}
 	}
