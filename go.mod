@@ -1,3 +1,3 @@
 module github.com/haiyiyun/webrouter
 
-go 1.16
+go 1.17
