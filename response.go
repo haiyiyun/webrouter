@@ -1,7 +1,10 @@
 package webrouter
 
 import (
+	"bufio"
 	"bytes"
+	"errors"
+	"net"
 	"net/http"
 	"sync"
 )
@@ -72,4 +75,12 @@ func (rw *ResponseWriter) GetData(key string) (interface{}, bool) {
 	rw.mu.RUnlock()
 
 	return value, found
+}
+
+func (rw *ResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	if h, ok := rw.ResponseWriter.(http.Hijacker); ok {
+		return h.Hijack()
+	}
+
+	return nil, nil, errors.New("response does not implement http.Hijacker")
 }
